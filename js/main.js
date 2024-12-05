@@ -2,155 +2,126 @@
 
 class Juego {
     constructor(nombre, genero, precio) {
-        this.nombre = nombre
-        this.genero = genero
-        this.precio = precio
+        this.nombre = nombre;
+        this.genero = genero;
+        this.precio = precio;
     }
 }
 
 // Funciones
 
-function agregarJuego() {
-    let nombre = prompt("Ingrese el nombre del juego:")
-    let genero = prompt("Ingrese el género del juego:")
-    let precio = parseFloat(prompt("Ingrese el precio del juego:"))
+function mostrarOpcionesComprador() {
+    document.getElementById('bienvenida').style.display = 'none';
+    document.getElementById('comprador').style.display = 'block';
+}
 
-    const nuevoJuego = new Juego(nombre, genero, precio)
-    juegos.push(nuevoJuego)
-    alert("Juego agregado con éxito.")
+function mostrarOpcionesAdministrador() {
+    document.getElementById('bienvenida').style.display = 'none';
+    document.getElementById('administrador').style.display = 'block';
+}
+
+function ocultarComprador() {
+    document.getElementById('comprador').style.display = 'none';
+    document.getElementById('bienvenida').style.display = 'block';
+}
+
+function ocultarAdministrador() {
+    document.getElementById('administrador').style.display = 'none';
+    document.getElementById('bienvenida').style.display = 'block';
 }
 
 function mostrarJuegos() {
-    if (juegos.length === 0) {
-        alert("No hay juegos en la lista.")
-    } else {
-        let lista = "Lista de Juegos:\n"
-        for (let i = 0; i < juegos.length; i++) {
-            lista += `${i + 1}. ${juegos[i].nombre} - Género: ${juegos[i].genero}, Precio: $${juegos[i].precio}\n`
-        }
-        console.log(lista)
-    }
+    const tablaJuegos = document.getElementById('tablaJuegos').getElementsByTagName('tbody')[0];
+    tablaJuegos.innerHTML = '';
+    juegos.forEach(juego => {
+        const fila = tablaJuegos.insertRow();
+        fila.insertCell(0).innerText = juego.nombre;
+        fila.insertCell(1).innerText = juego.genero;
+        fila.insertCell(2).innerText = `$${juego.precio}`;
+    });
 }
 
 function comprarJuego() {
-    if (juegos.length === 0) {
-        alert("No hay juegos disponibles para comprar.")
+    const nombreJuego = prompt("Ingrese el nombre del juego que desea comprar:");
+    const juego = juegos.find(j => j.nombre.toLowerCase() === nombreJuego.toLowerCase());
+    if (juego) {
+        alert(`Has comprado "${juego.nombre}" por $${juego.precio}.`);
     } else {
-        let lista = "Lista de Juegos:\n"
-        for (let i = 0; i < juegos.length; i++) {
-            lista += (i + 1) + ". " + juegos[i].nombre + " - Género: " + juegos[i].genero + ", Precio: " + juegos[i].precio + "\n"
-        }
-        lista += "0. Cancelar\n";
-        let opcion = parseInt(prompt(lista + "Seleccione el índice del juego que desea comprar:"))
+        alert("Juego no encontrado.");
+    }
+}
 
-        if (opcion === 0) {
-            alert("Compra cancelada.");
-        } else if (opcion > 0 && opcion <= juegos.length) {
-            alert("Has comprado " + juegos[opcion - 1].nombre + " por " + juegos[opcion - 1].precio + ".")
-        } else {
-            alert("Opción inválida.");
-        }
+function agregarJuegoForm() {
+    document.getElementById('administrador').style.display = 'none';
+    document.getElementById('formAgregarJuego').style.display = 'block';
+}
+
+function agregarJuego() {
+    const nombre = document.getElementById('nombreJuego').value;
+    const genero = document.getElementById('generoJuego').value;
+    const precio = parseFloat(document.getElementById('precioJuego').value);
+
+    const juegoExistente = juegos.some(juego => juego.nombre.toLowerCase() === nombre.toLowerCase());
+    
+    if (juegoExistente) {
+        alert("Ese juego ya existe.");
+    } else if (nombre && genero && precio) {
+        const nuevoJuego = new Juego(nombre, genero, precio);
+        juegos.push(nuevoJuego);
+        mostrarJuegos();
+        cancelarAgregarJuego();
+    } else {
+        alert("Por favor, complete todos los datos.");
+    }
+}
+
+function cancelarAgregarJuego() {
+    document.getElementById('formAgregarJuego').style.display = 'none';
+    document.getElementById('administrador').style.display = 'block';
+}
+
+function modificarJuegoForm() {
+    document.getElementById('administrador').style.display = 'none';
+    document.getElementById('formModificarJuego').style.display = 'block';
+}
+
+function cargarJuegoModificar() {
+    const nombreJuegoModificar = document.getElementById('nombreJuegoModificar').value;
+    const juegoSeleccionado = juegos.find(juego => juego.nombre.toLowerCase() === nombreJuegoModificar.toLowerCase());
+
+    if (juegoSeleccionado) {
+        document.getElementById('nuevoNombre').value = juegoSeleccionado.nombre;
+        document.getElementById('nuevoGenero').value = juegoSeleccionado.genero;
+        document.getElementById('nuevoPrecio').value = juegoSeleccionado.precio;
+    } else {
+        alert("Juego no encontrado.");
     }
 }
 
 function modificarJuego() {
-    if (juegos.length === 0) {
-        alert("No hay juegos disponibles para modificar.");
+    const nombreJuegoModificar = document.getElementById('nombreJuegoModificar').value;
+    const juegoSeleccionado = juegos.find(juego => juego.nombre.toLowerCase() === nombreJuegoModificar.toLowerCase());
+
+    if (juegoSeleccionado) {
+        juegoSeleccionado.nombre = document.getElementById('nuevoNombre').value;
+        juegoSeleccionado.genero = document.getElementById('nuevoGenero').value;
+        juegoSeleccionado.precio = parseFloat(document.getElementById('nuevoPrecio').value);
+        
+        mostrarJuegos();
+        cancelarModificarJuego();
     } else {
-        let lista = "Lista de Juegos:\n";
-        for (let i = 0; i < juegos.length; i++) {
-            lista += (i + 1) + ". " + juegos[i].nombre + " - Género: " + juegos[i].genero + ", Precio: " + juegos[i].precio + "\n";
-        }
-        lista += "0. Cancelar\n";
-        let opcion = parseInt(prompt(lista + "Seleccione el índice del juego que desea modificar:"));
-
-        if (opcion === 0) {
-            alert("Modificación cancelada.");
-        } else if (opcion > 0 && opcion <= juegos.length) {
-            let juegoSeleccionado = juegos[opcion - 1];
-
-            let nuevoNombre = prompt("Ingrese el nuevo nombre del juego");
-            let nuevoGenero = prompt("Ingrese el nuevo género del juego");
-            let nuevoPrecio = parseFloat(prompt("Ingrese el nuevo precio del juego"));
-
-            juegoSeleccionado.nombre = nuevoNombre;
-            juegoSeleccionado.genero = nuevoGenero;
-            juegoSeleccionado.precio = nuevoPrecio;
-
-            alert("Juego modificado con éxito.");
-        } else {
-            alert("Opción inválida.");
-        }
+        alert("Juego no encontrado.");
     }
 }
 
-function opcionesComprador() {
-    let opcion = parseInt(prompt("Opciones para compradores:\n 1. Comprar un juego\n 2. Ver lista de juegos\n 0. Salir."));
-    
-    while (opcion !== 0) {
-        if (opcion === 1) {
-
-            comprarJuego()
-
-        } else if (opcion === 2) {
-
-            mostrarJuegos()
-
-        } else {
-
-            alert("Opción inválida.");
-        }
-        opcion = parseInt(prompt("Opciones para compradores:\n 1. Comprar un juego\n 2. Ver lista de juegos\n 0. Salir."));
-    }
-    alert("Gracias por tu visita, comprador.");
-}
-
-function opcionesAdministrador() {
-    let opcion = parseInt(prompt("Opciones para administradores:\n1. Agregar un juego\n2. Modificar juego existente\n3. Ver lista de juegos\n0. Salir"));
-    
-    while (opcion !== 0) {
-        if (opcion === 1) {
-            agregarJuego()
-
-        } else if (opcion === 2) {
-
-            modificarJuego()
-
-        } else if (opcion === 3) {
-
-            mostrarJuegos()
-
-        } else {
-
-            alert("Opción inválida.")
-
-        }
-        opcion = parseInt(prompt("Opciones para administradores:\n1. Agregar un juego\n2. Modificar juego existente\n3. Ver lista de juegos\n0. Salir"));
-    }
-    alert("Gracias por tu visita, administrador.");
-}
-
-function inicioDePrograma() {
-    let tipoDeUsuario = parseInt(prompt("Bienvenido. Por favor, elija:\n1. Soy comprador\n2. Soy administrador\n0. Salir"));
-    
-    while (tipoDeUsuario !== 0) {
-        if (tipoDeUsuario === 1) {
-            opcionesComprador()
-        } else if (tipoDeUsuario === 2) {
-            opcionesAdministrador()
-        } else {
-            alert("Opción inválida.")
-        }
-        tipoDeUsuario = parseInt(prompt("Bienvenido. Por favor, elija:\n1. Soy comprador\n2. Soy administrador\n0. Salir"))
-    }
-    alert("Gracias por visitarnos.")
+function cancelarModificarJuego() {
+    document.getElementById('formModificarJuego').style.display = 'none';
+    document.getElementById('administrador').style.display = 'block';
 }
 
 // Inicio del Programa
 
-let juegos = []
-
-const nuevoJuego = new Juego("Minecraft", "aventura", 30)
-juegos.push(nuevoJuego)
-
-inicioDePrograma()
+let juegos = [];
+const nuevoJuego = new Juego("Minecraft", "aventura", 30);
+juegos.push(nuevoJuego);
+mostrarJuegos();

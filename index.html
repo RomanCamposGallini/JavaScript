@@ -6,9 +6,83 @@
     <title>Entrega JavaScript</title>
 </head>
 <body>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
 
     <h1>Tienda de Juegos</h1>
-    
+
+    <div id="bienvenida">
+        <h2>Elija su tipo de usuario</h2>
+        <button onclick="mostrarOpcionesComprador()" style="padding: 10px; font-size: medium;">Soy comprador</button>
+        <button onclick="mostrarOpcionesAdministrador()" style="padding: 10px; font-size: medium;">Soy administrador</button>
+    </div>
+
+    <h3>Lista de Juegos</h3>
+    <table id="tablaJuegos">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Género</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div id="comprador" style="display:none;">
+        <h2>Opciones para Comprador</h2>
+        <button onclick="comprarJuego()">Comprar un juego</button>
+        <button onclick="ocultarComprador()">Salir</button>
+    </div>
+
+    <div id="administrador" style="display:none;">
+        <h2>Opciones para Administrador</h2>
+        <button onclick="agregarJuegoForm()">Agregar un juego</button>
+        <button onclick="modificarJuegoForm()">Modificar juego existente</button>
+        <button onclick="ocultarAdministrador()">Salir</button>
+    </div>
+
+    <div id="formAgregarJuego" style="display:none;">
+        <h3>Agregar un juego</h3>
+        <label for="nombreJuego">Nombre del juego:</label>
+        <input type="text" id="nombreJuego"><br><br>
+        <label for="generoJuego">Género del juego:</label>
+        <input type="text" id="generoJuego"><br><br>
+        <label for="precioJuego">Precio del juego:</label>
+        <input type="number" id="precioJuego" step="0.01"><br><br>
+        <button onclick="agregarJuego()">Agregar</button>
+        <button onclick="cancelarAgregarJuego()">Cancelar</button>
+    </div>
+
+    <div id="formModificarJuego" style="display:none;">
+        <h3>Modificar juego</h3>
+        <label for="nombreJuegoModificar">Nombre del juego a modificar:</label>
+        <input type="text" id="nombreJuegoModificar"><br><br>
+        <button onclick="cargarJuegoModificar()">Cargar Datos</button><br><br>
+        
+        <label for="nuevoNombre">Nuevo nombre:</label>
+        <input type="text" id="nuevoNombre"><br><br>
+        <label for="nuevoGenero">Nuevo género:</label>
+        <input type="text" id="nuevoGenero"><br><br>
+        <label for="nuevoPrecio">Nuevo precio:</label>
+        <input type="number" id="nuevoPrecio" step="0.01"><br><br>
+        <button onclick="modificarJuego()">Modificar</button>
+        <button onclick="cancelarModificarJuego()">Cancelar</button>
+    </div>
+
     <script src="js/main.js"></script>
 </body>
 </html>
