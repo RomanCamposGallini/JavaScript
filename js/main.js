@@ -1,5 +1,3 @@
-// Objetos
-
 class Juego {
     constructor(nombre, genero, precio) {
         this.nombre = nombre;
@@ -7,8 +5,6 @@ class Juego {
         this.precio = precio;
     }
 }
-
-// Funciones
 
 function mostrarOpcionesComprador() {
     document.getElementById('bienvenida').style.display = 'none';
@@ -28,6 +24,19 @@ function ocultarComprador() {
 function ocultarAdministrador() {
     document.getElementById('administrador').style.display = 'none';
     document.getElementById('bienvenida').style.display = 'block';
+}
+
+function cargarJuegos() {
+    const juegosGuardados = localStorage.getItem('juegos');
+    if (juegosGuardados) {
+        return JSON.parse(juegosGuardados);
+    } else {
+        return [];
+    }
+}
+
+function guardarJuegos() {
+    localStorage.setItem('juegos', JSON.stringify(juegos));
 }
 
 function mostrarJuegos() {
@@ -68,6 +77,7 @@ function agregarJuego() {
     } else if (nombre && genero && precio) {
         const nuevoJuego = new Juego(nombre, genero, precio);
         juegos.push(nuevoJuego);
+        guardarJuegos();
         mostrarJuegos();
         cancelarAgregarJuego();
     } else {
@@ -85,30 +95,28 @@ function modificarJuegoForm() {
     document.getElementById('formModificarJuego').style.display = 'block';
 }
 
-function cargarJuegoModificar() {
-    const nombreJuegoModificar = document.getElementById('nombreJuegoModificar').value;
-    const juegoSeleccionado = juegos.find(juego => juego.nombre.toLowerCase() === nombreJuegoModificar.toLowerCase());
+function modificarJuego() {
+    const nombre = prompt("Ingrese el nombre del juego que desea modificar:");
+    const juegoSeleccionado = juegos.find(juego => juego.nombre.toLowerCase() === nombre.toLowerCase());
 
     if (juegoSeleccionado) {
         document.getElementById('nuevoNombre').value = juegoSeleccionado.nombre;
         document.getElementById('nuevoGenero').value = juegoSeleccionado.genero;
         document.getElementById('nuevoPrecio').value = juegoSeleccionado.precio;
-    } else {
-        alert("Juego no encontrado.");
-    }
-}
 
-function modificarJuego() {
-    const nombreJuegoModificar = document.getElementById('nombreJuegoModificar').value;
-    const juegoSeleccionado = juegos.find(juego => juego.nombre.toLowerCase() === nombreJuegoModificar.toLowerCase());
+        document.getElementById('formModificarJuego').style.display = 'block';
+        document.getElementById('administrador').style.display = 'none';
 
-    if (juegoSeleccionado) {
-        juegoSeleccionado.nombre = document.getElementById('nuevoNombre').value;
-        juegoSeleccionado.genero = document.getElementById('nuevoGenero').value;
-        juegoSeleccionado.precio = parseFloat(document.getElementById('nuevoPrecio').value);
-        
-        mostrarJuegos();
-        cancelarModificarJuego();
+        document.getElementById('formModificarJuego').onsubmit = function(e) {
+            e.preventDefault();
+            juegoSeleccionado.nombre = document.getElementById('nuevoNombre').value;
+            juegoSeleccionado.genero = document.getElementById('nuevoGenero').value;
+            juegoSeleccionado.precio = parseFloat(document.getElementById('nuevoPrecio').value);
+            
+            guardarJuegos();
+            mostrarJuegos();
+            cancelarModificarJuego();
+        };
     } else {
         alert("Juego no encontrado.");
     }
@@ -119,9 +127,10 @@ function cancelarModificarJuego() {
     document.getElementById('administrador').style.display = 'block';
 }
 
-// Inicio del Programa
-
-let juegos = [];
-const nuevoJuego = new Juego("Minecraft", "aventura", 30);
-juegos.push(nuevoJuego);
+let juegos = cargarJuegos();
+if (juegos.length === 0) {
+    const nuevoJuego = new Juego("Minecraft", "aventura", 30);
+    juegos.push(nuevoJuego);
+    guardarJuegos();
+}
 mostrarJuegos();
