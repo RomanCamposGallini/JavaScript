@@ -1,0 +1,20 @@
+[
+    {
+        "nombre": "Minecraft",
+        "genero": "Aventura",
+        "precio": 30,
+        "fecha": "2024-12-26"
+    },
+    {
+        "nombre": "Fortnite",
+        "genero": "Battle Royale",
+        "precio": 0,
+        "fecha": "2024-12-26"
+    },
+    {
+        "nombre": "The Witcher 3",
+        "genero": "RPG",
+        "precio": 50,
+        "fecha": "2024-12-26"
+    }
+]

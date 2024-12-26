@@ -1,8 +1,9 @@
 class Juego {
-    constructor(nombre, genero, precio) {
+    constructor(nombre, genero, precio, fecha = new Date().toLocaleDateString()) {
         this.nombre = nombre;
         this.genero = genero;
         this.precio = precio;
+        this.fecha = fecha;
     }
 }
 
@@ -47,16 +48,51 @@ function mostrarJuegos() {
         fila.insertCell(0).innerText = juego.nombre;
         fila.insertCell(1).innerText = juego.genero;
         fila.insertCell(2).innerText = `$${juego.precio}`;
+        fila.insertCell(3).innerText = juego.fecha || "Sin fecha";
     });
 }
 
+function cargarJuegosDesdeJSON() {
+    fetch('juegos.json')
+        .then(response => {
+            if (!response.ok) throw new Error("Error al cargar el JSON");
+            return response.json();
+        })
+        .then(data => {
+            data.forEach(item => {
+                const nuevoJuego = new Juego(item.nombre, item.genero, item.precio);
+                juegos.push(nuevoJuego);
+            });
+            guardarJuegos();
+            mostrarJuegos();
+        })
+        .catch(error => {
+            Swal.fire({
+                title: 'Error',
+                text: `No se pudo cargar el JSON: ${error.message}`,
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            });
+        });
+}
+
 function comprarJuego() {
-    const nombreJuego = prompt("Ingrese el nombre del juego que desea comprar:");
+    const nombreJuego = document.getElementById('nombreJuegoCompra').value;
     const juego = juegos.find(j => j.nombre.toLowerCase() === nombreJuego.toLowerCase());
     if (juego) {
-        alert(`Has comprado "${juego.nombre}" por $${juego.precio}.`);
+        Swal.fire({
+            title: '¡Compra exitosa!',
+            text: `Has comprado "${juego.nombre}" por $${juego.precio}.`,
+            icon: 'success',
+            confirmButtonText: 'Ok'
+        });
     } else {
-        alert("Juego no encontrado.");
+        Swal.fire({
+            title: 'Error',
+            text: "Juego no encontrado.",
+            icon: 'error',
+            confirmButtonText: 'Ok'
+        });
     }
 }
 
@@ -71,9 +107,14 @@ function agregarJuego() {
     const precio = parseFloat(document.getElementById('precioJuego').value);
 
     const juegoExistente = juegos.some(juego => juego.nombre.toLowerCase() === nombre.toLowerCase());
-    
+
     if (juegoExistente) {
-        alert("Ese juego ya existe.");
+        Swal.fire({
+            title: 'Error',
+            text: "Ese juego ya existe.",
+            icon: 'error',
+            confirmButtonText: 'Ok'
+        });
     } else if (nombre && genero && precio) {
         const nuevoJuego = new Juego(nombre, genero, precio);
         juegos.push(nuevoJuego);
@@ -81,7 +122,12 @@ function agregarJuego() {
         mostrarJuegos();
         cancelarAgregarJuego();
     } else {
-        alert("Por favor, complete todos los datos.");
+        Swal.fire({
+            title: 'Error',
+            text: "Por favor, complete todos los datos.",
+            icon: 'error',
+            confirmButtonText: 'Ok'
+        });
     }
 }
 
@@ -95,8 +141,8 @@ function modificarJuegoForm() {
     document.getElementById('formModificarJuego').style.display = 'block';
 }
 
-function modificarJuego() {
-    const nombre = prompt("Ingrese el nombre del juego que desea modificar:");
+function cargarJuegoModificar() {
+    const nombre = document.getElementById('nombreJuegoModificar').value;
     const juegoSeleccionado = juegos.find(juego => juego.nombre.toLowerCase() === nombre.toLowerCase());
 
     if (juegoSeleccionado) {
@@ -106,19 +152,43 @@ function modificarJuego() {
 
         document.getElementById('formModificarJuego').style.display = 'block';
         document.getElementById('administrador').style.display = 'none';
-
-        document.getElementById('formModificarJuego').onsubmit = function(e) {
-            e.preventDefault();
-            juegoSeleccionado.nombre = document.getElementById('nuevoNombre').value;
-            juegoSeleccionado.genero = document.getElementById('nuevoGenero').value;
-            juegoSeleccionado.precio = parseFloat(document.getElementById('nuevoPrecio').value);
-            
-            guardarJuegos();
-            mostrarJuegos();
-            cancelarModificarJuego();
-        };
     } else {
-        alert("Juego no encontrado.");
+        Swal.fire({
+            title: 'Error',
+            text: "Juego no encontrado.",
+            icon: 'error',
+            confirmButtonText: 'Ok'
+        });
+    }
+}
+
+function modificarJuego() {
+    const nombre = document.getElementById('nuevoNombre').value;
+    const genero = document.getElementById('nuevoGenero').value;
+    const precio = parseFloat(document.getElementById('nuevoPrecio').value);
+
+    const juegoSeleccionado = juegos.find(juego => juego.nombre.toLowerCase() === nombre.toLowerCase());
+
+    if (juegoSeleccionado) {
+        juegoSeleccionado.nombre = nombre;
+        juegoSeleccionado.genero = genero;
+        juegoSeleccionado.precio = precio;
+        guardarJuegos();
+        mostrarJuegos();
+        cancelarModificarJuego();
+        Swal.fire({
+            title: '¡Éxito!',
+            text: "Juego modificado correctamente.",
+            icon: 'success',
+            confirmButtonText: 'Ok'
+        });
+    } else {
+        Swal.fire({
+            title: 'Error',
+            text: "Juego no encontrado.",
+            icon: 'error',
+            confirmButtonText: 'Ok'
+        });
     }
 }
 
@@ -127,10 +197,14 @@ function cancelarModificarJuego() {
     document.getElementById('administrador').style.display = 'block';
 }
 
-let juegos = cargarJuegos();
+let juegos = [];
+
+cargarJuegosDesdeJSON().then(() => {
+    mostrarJuegos();
+});
+
 if (juegos.length === 0) {
     const nuevoJuego = new Juego("Minecraft", "aventura", 30);
     juegos.push(nuevoJuego);
     guardarJuegos();
 }
-mostrarJuegos();
